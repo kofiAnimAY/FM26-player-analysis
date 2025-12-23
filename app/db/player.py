@@ -7,12 +7,18 @@ from datetime import datetime,timedelta,date,time
 
 
 
-def _get_event_collection():
+def _get_player_collection():
     return DB.get_collection(PLAYERS_COLLECTION)
 
-def add_player():
-    player_doc = {
-
-    }
-    result = _get_event_collection().insert_one(player_doc)
+def add_player(**attributes):
+    player_doc={"name":attributes.get("name")}
+    player_doc.update(attributes)
+    result = _get_player_collection().insert_one(player_doc)
     return str(result.inserted_id)
+
+def get_event(name:str):
+    player_doc=_get_player_collection().find_one({"name": name})
+    if not player_doc:
+        return None
+    return player_doc
+
