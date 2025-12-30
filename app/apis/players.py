@@ -142,8 +142,8 @@ class ImportPlayers(Resource):
                     continue
                 if "-----------------------------" in line:
                     continue
-                if line.startswith("| Name"):
-                    continue
+                # if line.startswith("| Name"):
+                #     continue
                 
                 info=[]
                 info=[part.strip() for part in line.split("|")]
