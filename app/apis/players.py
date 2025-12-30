@@ -81,29 +81,95 @@ class ImportPlayers(Resource):
         if not os.path.exists(path):
             return {'error': 'File not found'}, HTTPStatus.NOT_FOUND
         attributes=[
-            "name", 
+            'name',
+            'crossing',
+            'dribbling',
+            'finishing',
+            'first_touch',
+            'free_kick_taking',
+            'heading',
+            'long_shots',
+            'long_throws',
+            'marking',
+            'passing',
+            'penalty_taking',
+            'tackling',
+            'technique',
+            'corners',
+            'aggression',
+            'anticipation',
+            'bravery',
+            'composure',
+            'concentration',
+            'decisions',
+            'determination',
+            'flair',
+            'leadership',
+            'off_the_ball',
+            'positioning',
+            'teamwork',
+            'vision',
+            'work_rate',
+            
+            
+            'acceleration',
+            'agility',
+            'balance',
+            'jumping_reach',
+            'natural_fitness',
+            'pace',
+            'stamina',
+            'strength',
+            'aerial_reach',
+            'command_of_area',
+            'communication',
+            'eccentricity',
+            'handling',
+            'kicking',
+            'one_on_ones',
+            'punching_tendency',
+            'reflexes',
+            'rushing_out_tendency',
+            'throwing', 
         ]
         with open(path,"r",encoding='utf-8')as file:
             players=[]
-
+            
             for line in file:
+                
                 line=line.strip()
                 if not line:
                     continue
+                if "-----------------------------" in line:
+                    continue
+                if line.startswith("| Name"):
+                    continue
+                
                 info=[]
                 info=[part.strip() for part in line.split("|")]
-                for i in range(1,len(info)):
+                for i in range(len(info)):
                     try:
                         info[i]=int(info[i])
                     except ValueError:
-                       info[i]=0
+                        info[i]=info[i]
                         
                 if len(info)<len(attributes):
                     continue
                 player_dict=dict(zip(attributes,info))
-                player_id= player.add_player(player_dict)
+                player_id= player.add_player(**player_dict)
                 players.append(player_id)
-            return {MSG: f"{len(players)} players added"}, HTTPStatus.OK
+            return {MSG: f"{len(players)} players successfully added"}, HTTPStatus.OK
+        
+
+
+@players_ns.route("/list")
+class PrintPlayers(Resource):
+    def get(self):
+        players = player._get_player_collection().find({})
+        player_list = serialize_items(players)
+        
+        return player_list, HTTPStatus.OK
+
 
         
 

@@ -16,7 +16,7 @@ def add_player(**attributes):
     result = _get_player_collection().insert_one(player_doc)
     return str(result.inserted_id)
 
-def get_event(name:str):
+def get_player(name:str):
     player_doc=_get_player_collection().find_one({"name": name})
     if not player_doc:
         return None
