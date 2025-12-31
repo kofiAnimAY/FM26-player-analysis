@@ -19,6 +19,8 @@ def add_player(**attributes):
 
 def get_player(name:str):
     player_doc=_get_player_collection().find_one({"name": name})
+    player_doc["id"] = str(player_doc["_id"])
+    del player_doc["_id"]
     if not player_doc:
         return None
     return player_doc

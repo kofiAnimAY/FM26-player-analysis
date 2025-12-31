@@ -1,0 +1,7 @@
+from http import HTTPStatus
+from app.apis import MSG
+from tests.utils import assert_items_equal
+from unittest.mock import patch
+
+def test_nothing():
+    assert 1+1==2

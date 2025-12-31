@@ -142,16 +142,16 @@ class ImportPlayers(Resource):
                     continue
                 if "-----------------------------" in line:
                     continue
-                # if line.startswith("| Name"):
-                #     continue
+                if line.startswith("| Name"):
+                    continue
                 
                 info=[]
                 info=[part.strip() for part in line.split("|")]
-                for i in range(len(info)):
+                for i in range(len(info)-1):
                     try:
-                        info[i]=int(info[i])
+                        info[i]=int(info[i+1])
                     except ValueError:
-                        info[i]=info[i]
+                        info[i]=info[i+1]
                         
                 if len(info)<len(attributes):
                     continue
@@ -169,6 +169,13 @@ class PrintPlayers(Resource):
         player_list = serialize_items(players)
         
         return player_list, HTTPStatus.OK
+    
+@players_ns.route("/<string:name>")
+class FindPlayers(Resource):
+    def get(self,name):
+        player_doc = player.get_player(name)
+        
+        return player_doc, HTTPStatus.OK
 
 
         
