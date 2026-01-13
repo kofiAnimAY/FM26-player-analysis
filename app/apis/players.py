@@ -6,6 +6,8 @@ from app.db import player
 from app.apis import MSG
 from app.db.constants import PATH
 import os
+from app.apis import positions
+
 players_ns = Namespace(
     "players",
     description="Player API"
@@ -70,6 +72,18 @@ path_model= players_ns.model(
         PATH: fields.String(example="players.rtf")
     }
 )
+role_model=players_ns.model(
+    "Role",
+    {
+        'role': fields.String(
+        required=True,
+        enum=['Goalkeeper','SweeperKeeper','BallPlayingDef','CenterBack',
+              'WingBack','DeepLyingPlaymaker', 'BallWinningMid','BoxToBox',
+              'AdvancedPlaymaker','ShadowStriker'],
+        description='Player Roles'
+    )
+}) 
+    
 
 
 @players_ns.route("/import")
@@ -177,11 +191,24 @@ class FindPlayers(Resource):
         
         return player_doc, HTTPStatus.OK
 
-
+@players_ns.route("/analyse/<string:name>")
+class PlayerAnalysis(Resource):
+    @players_ns.expect(role_model)
+    def post(self, name):
+        player_doc=player.get_player(name)
+        data=request.json
+        role=data.get('role')
+        position=positions.create_position(role)
+        rating= position.rating(player_doc)
+        return {
+            "player":player_doc['name'],
+            "role":role,
+            "rating": rating
+        }
         
 
 
-
+        
 
 
         
