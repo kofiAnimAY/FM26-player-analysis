@@ -206,6 +206,11 @@ class PlayerAnalysis(Resource):
             "rating": rating
         }
         
+@players_ns.route("/analyse/role/<string:role>")
+class RoleAnalysis(Resource):
+    @players_ns.expect(role_model)
+    def post(self):
+        data=request.json
 
 
         
