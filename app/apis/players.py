@@ -211,6 +211,20 @@ class RoleAnalysis(Resource):
     @players_ns.expect(role_model)
     def post(self):
         data=request.json
+        role=data.get(role)
+        ratings={}
+        for player in player._get_player_collection():
+            position=positions.create_position(role)
+            rating= position.rating(player)
+            ratings[player['name']]=rating
+
+        sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True))
+        return sorted_ratings[:5]
+
+
+
+            
+
 
 
         
