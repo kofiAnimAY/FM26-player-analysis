@@ -206,7 +206,7 @@ class PlayerAnalysis(Resource):
             "rating": rating
         }
         
-@players_ns.route("/analyse/role/<string:role>")
+@players_ns.route("/analyse/role")
 class RoleAnalysis(Resource):
     @players_ns.expect(role_model)
     def post(self):
