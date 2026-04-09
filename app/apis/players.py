@@ -6,7 +6,9 @@ from app.db import player
 from app.apis import MSG
 from app.db.constants import PATH
 import os
+import pandas as pd
 from app.apis import positions
+from app.apis.parser import FM24Parser
 
 players_ns = Namespace(
     "players",
@@ -90,89 +92,35 @@ role_model=players_ns.model(
 class ImportPlayers(Resource):
     @players_ns.expect(path_model)
     def post(self):
-        data=request.json
-        path=data.get(PATH)
+        data = request.json
+        path = data.get(PATH)
         if not os.path.exists(path):
             return {'error': 'File not found'}, HTTPStatus.NOT_FOUND
-        attributes=[
-            'name',
-            'crossing',
-            'dribbling',
-            'finishing',
-            'first_touch',
-            'free_kick_taking',
-            'heading',
-            'long_shots',
-            'long_throws',
-            'marking',
-            'passing',
-            'penalty_taking',
-            'tackling',
-            'technique',
-            'corners',
-            'aggression',
-            'anticipation',
-            'bravery',
-            'composure',
-            'concentration',
-            'decisions',
-            'determination',
-            'flair',
-            'leadership',
-            'off_the_ball',
-            'positioning',
-            'teamwork',
-            'vision',
-            'work_rate',
-            
-            
-            'acceleration',
-            'agility',
-            'balance',
-            'jumping_reach',
-            'natural_fitness',
-            'pace',
-            'stamina',
-            'strength',
-            'aerial_reach',
-            'command_of_area',
-            'communication',
-            'eccentricity',
-            'handling',
-            'kicking',
-            'one_on_ones',
-            'punching_tendency',
-            'reflexes',
-            'rushing_out_tendency',
-            'throwing', 
-        ]
-        with open(path,"r",encoding='utf-8')as file:
-            players=[]
-            
-            for line in file:
-                
-                line=line.strip()
-                if not line:
-                    continue
-                if "-----------------------------" in line:
-                    continue
-                if line.startswith("| Name"):
-                    continue
-                
-                info=[]
-                info=[part.strip() for part in line.split("|")]
-                for i in range(len(info)-1):
-                    try:
-                        info[i]=int(info[i+1])
-                    except ValueError:
-                        info[i]=info[i+1]
-                        
-                if len(info)<len(attributes):
-                    continue
-                player_dict=dict(zip(attributes,info))
-                player_id= player.add_player(**player_dict)
-                players.append(player_id)
-            return {MSG: f"{len(players)} players successfully added"}, HTTPStatus.OK
+
+        parser = FM24Parser(path, os.path.basename(path), delimiter="|")
+        df = parser.parse()
+
+        # Convert DataFrame columns to lowercase for consistency
+        df.columns = df.columns.str.lower()
+
+        # Convert numeric columns to int
+        numeric_cols = df.select_dtypes(include=['object']).columns
+        for col in numeric_cols:
+            try:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(df[col])
+            except:
+                pass
+
+        players_added = []
+        for _, row in df.iterrows():
+            # Convert row to dict, excluding NaN values
+            player_dict = row.dropna().to_dict()
+            # Only add if we have at least a name
+            if 'name' in player_dict and player_dict['name']:
+                player_id = player.add_player(**player_dict)
+                players_added.append(player_id)
+
+        return {MSG: f"{len(players_added)} players successfully added"}, HTTPStatus.OK
         
 
 
@@ -210,16 +158,16 @@ class PlayerAnalysis(Resource):
 class RoleAnalysis(Resource):
     @players_ns.expect(role_model)
     def post(self):
-        data=request.json
-        role=data.get(role)
-        ratings={}
-        for player in player._get_player_collection():
-            position=positions.create_position(role)
-            rating= position.rating(player)
-            ratings[player['name']]=rating
+        data = request.json
+        role = data.get('role')
+        ratings = {}
+        for player_doc in player._get_player_collection().find({}):
+            position = positions.create_position(role)
+            rating = position.rating(player_doc)
+            ratings[player_doc['name']] = rating
 
         sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True))
-        return sorted_ratings[:5]
+        return sorted_ratings
 
 
 

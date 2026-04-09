@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 import pandas as pd
-from io import StringI0
+from io import StringIO
 
 class BaseParser():
 
@@ -38,6 +38,4 @@ class FM24Parser(BaseParser):
 
         df = pd.read_csv(StringIO(content_str), delimiter=self.delimiter)
 
-        data = df.to_dict(orient="records")
-
-        return data
+        return df
