@@ -14,3 +14,4 @@ python-telegram-bot==22.5
 requests
 gunicorn==23.0.0
 mongomock==4.3.0
+pandas

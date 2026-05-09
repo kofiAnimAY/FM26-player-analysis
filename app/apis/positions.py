@@ -62,14 +62,14 @@ class BasePosition(ABC):
         divisor=0
         for key,value in self.weights.items():
             score += value*player_doc.get(key,0)
-            divisor+=value
+            divisor+=abs(value)
         return score/divisor
         
     
 
-class Goalkeeper(BasePosition):
+class GoalKeeper(BasePosition):
     def __init__(self):
-        super().__init__("Goalkeeper","GK",{
+        super().__init__("GoalKeeper","GK",{
             "throwing": 0.2,
             "reflexes": 0.5,
             "one_on_ones": 0.5,
@@ -119,9 +119,9 @@ class BallPlayingDef(BasePosition):
         super().__init__("Ball Playing Defender","DEF",{
             "first_touch": 0.2,
             "heading": 0.45,
-            "marking": 0.5,
-            "passing": 0.4,
-            "tackling": 0.5,
+            "marking": 0.6,
+            "passing": 0.45,
+            "tackling": 0.6,
             "technique": 0.2,
             "aggression": 0.15,
             "anticipation": 0.2,
@@ -142,10 +142,9 @@ class CenterBack(BasePosition):
     def __init__(self):
         super().__init__("Central Defender","DEF",{
             
-            "heading": 0.45,
-            "marking": 0.5,
-            
-            "tackling": 0.5,
+            "heading": 0.6,
+            "marking": 0.6,
+            "tackling": 0.6,
             "technique": 0.2,
             "aggression": 0.2,
             "anticipation": 0.2,
@@ -154,10 +153,9 @@ class CenterBack(BasePosition):
             "concentration":0.15,
             "decisions": 0.2,
             "positioning": 0.4,
-            
-            "jumping_reach": 0.4,
+            "jumping_reach": 0.5,
             "pace": 0.3,
-            "strength": 0.5
+            "strength": 0.6
 
 
         })
@@ -168,7 +166,6 @@ class WingBack(BasePosition):
             "crossing": 0.4,
             "dribbling": 0.3,
             "first_touch": 0.2,
-            
             "marking": 0.3,
             "passing": 0.25,
             "tackling": 0.35,
@@ -195,11 +192,8 @@ class DeepLyingPlaymaker(BasePosition):
     def __init__(self):
         super().__init__("Deep Lying Playmaker","MID",{
             
-            "first_touch": 0.4,
-            
-            
-            "passing": 0.5,
-            
+            "first_touch": 0.4,        
+            "passing": 0.7,
             "technique": 0.3,
             "anticipation": 0.1,
             "composure": 0.25,
@@ -207,7 +201,7 @@ class DeepLyingPlaymaker(BasePosition):
             "off_the_ball": 0.2,
             "positioning": 0.2,
             "teamwork":0.2,
-            "vision": 0.45,
+            "vision": 0.55,
             "balance":0.15,
 
 
@@ -218,19 +212,19 @@ class BallWinningMid(BasePosition):
     def __init__(self):
         super().__init__("Ball Winning Midfielder","MID",{
             
-            "marking": 0.3,
-            "tackling": 0.5,
-            "aggression": 0.4,
+            "marking": 0.45,
+            "tackling": 0.7,
+            "aggression": 0.5,
             "anticipation": 0.25,
             "bravery":0.2,
             "concentration": 0.2,
             "positioning": 0.25,
             "teamwork":0.3,
-            "work_rate": 0.4,
+            "work_rate": 0.55,
             "agility":0.15,
             "pace":0.15,
             "stamina":0.3,
-            "strength":0.25,
+            "strength":0.35,
 
 
 
@@ -253,11 +247,11 @@ class BoxToBox(BasePosition):
             "off_the_ball":0.3,
             "positioning": 0.2,
             "teamwork":0.3,
-            "work_rate": 0.4,
+            "work_rate": 0.6,
             "acceleration":0.15,
             "balance":0.15,
             "pace":0.15,
-            "stamina":0.35,
+            "stamina":0.5,
             "strength":0.2
 
 
@@ -267,20 +261,17 @@ class BoxToBox(BasePosition):
 class AdvancedPlaymaker(BasePosition):
     def __init__(self):
         super().__init__("Advanced Playmaker","MID",{
-            "dribbling": 0.2,
+            "dribbling": 0.4,
             "first_touch": 0.4,
-            
-            
-            "passing": 0.5,
+            "passing": 0.65,
             "flair":0.2,
             "technique": 0.3,
             "anticipation": 0.1,
             "composure": 0.25,
-            "decisions": 0.25,
+            "decisions": 0.35,
             "off_the_ball": 0.35,
-            
             "teamwork":0.3,
-            "vision": 0.5,
+            "vision": 0.7,
             "agility":0.15
 
 
@@ -291,20 +282,17 @@ class ShadowStriker(BasePosition):
     def __init__(self):
         super().__init__("Shadow Striker","MID",{
             "dribbling": 0.35,
-            "finishing": 0.4,
+            "finishing": 0.5,
             "first_touch": 0.35,
-            
-            
             "passing": 0.2,
-            
             "technique": 0.2,
             "anticipation": 0.25,
             "composure": 0.25,
             "concentration":0.1,
             "decisions": 0.15,
-            "off_the_ball": 0.45,
+            "off_the_ball": 0.6,
             "work_rate":0.2,
-            "acceleration":0.3,
+            "acceleration":0.4,
             "agility":0.15,
             "balance":0.15,
             "pace":0.15,
@@ -314,11 +302,145 @@ class ShadowStriker(BasePosition):
 
         })
 
+class Winger(BasePosition):
+    def __init__(self):
+        super().__init__("Winger","MID",{
+            "crossing": 0.7,
+            "dribbling": 0.55,
+            "first_touch": 0.2,         
+            "passing": 0.2,
+            "technique": 0.25,
+            "balance": 0.15,
+            "agility": 0.25,
+            "off_the_ball": 0.2,
+            "work_rate": 0.2,
+            "acceleration": 0.6,
+            "pace": 0.5,
+            "stamina":0.2,
 
 
 
+        })
+
+class InvertedWinger(BasePosition):
+    def __init__(self):
+        super().__init__("Inverted Winger","MID",{
+            "crossing": 0.35,
+            "dribbling": 0.6,
+            "first_touch": 0.2,  
+            "long_shots": 0.15,
+            "composure": 0.15,
+            "decisions": 0.15,
+            "vision": 0.3,   
+            "passing": 0.3,
+            "technique": 0.3,
+            "balance": 0.15,
+            "agility": 0.25,
+            "off_the_ball": 0.35,
+            "work_rate": 0.15,
+            "acceleration": 0.55,
+            "pace": 0.45,
+            "stamina":0.15,
+
+
+
+        })
+
+class InsideForward(BasePosition):
+    def __init__(self):
+        super().__init__("Inside Forward","MID",{
+            
+            "dribbling": 0.4,
+            "finishing": 0.55,
+            "anticipation": 0.25,
+            "first_touch": 0.3,  
+            "long_shots": 0.15,
+            "composure": 0.15,
+            "flair":0.15, 
+            "passing": 0.15,
+            "technique": 0.3,
+            "balance": 0.15,
+            "agility": 0.25,
+            "off_the_ball": 0.5,
+            "work_rate": 0.15,
+            "acceleration": 0.55,
+            "pace": 0.45,
+            "stamina":0.15,
+
+
+
+        })
+
+class AdvancedForward(BasePosition):
+    def __init__(self):
+        super().__init__("Advanced Forward","FWD",{
+            "dribbling": 0.3,
+            "finishing": 0.7,
+            "first_touch": 0.3, 
+            "passing": 0.15,
+            "technique": 0.25,
+            "anticipation": 0.2,
+            "decisions": 0.2,
+            "work_rate": 0.2,
+            "long_shots": 0.2,
+            "composure": 0.25,
+            "decisions": 0.25,
+            "off_the_ball": 0.5,
+            "acceleration": 0.6,
+            "agility": 0.15,
+            "balance": 0.15,
+            "pace": 0.4,
+            "stamina":0.15,
+
+
+
+        })
+
+class DeepLyingForward(BasePosition):
+    def __init__(self):
+        super().__init__("Deep Lying Forward","FWD",{
+            "finishing": 0.55,
+            "first_touch": 0.3, 
+            "passing": 0.4,
+            "technique": 0.25,
+            "anticipation": 0.2,
+            "flair":0.15,
+            "decisions": 0.3,
+            "teamwork":0.25,
+            "vision": 0.5,
+            "strength": 0.2,
+            "composure": 0.25,
+            "off_the_ball": 0.4,
+            "balance": 0.15
+
+
+
+        })
+
+class TargetForward(BasePosition):
+    def __init__(self):
+        super().__init__("Target Forward","FWD",{
+            "finishing": 0.5,
+            "first_touch": 0.2, 
+            "heading": 0.55,
+            "anticipation": 0.2,
+            "aggression": 0.2,
+            "bravery":0.25,
+            "decisions": 0.2,
+            "composure": 0.25,
+            "off_the_ball": 0.35,
+            "teamwork":0.2,
+            "jumping_reach": 0.55,
+            "strength": 0.4,
+            "agility": 0.15,
+            "balance": 0.2,
+            
+
+
+
+        })
 POSITION_CLASSES = {
-    "GoalKeeper": Goalkeeper,
+    "GoalKeeper": GoalKeeper,
     "SweeperKeeper": SweeperKeeper,
     "BallPlayingDef": BallPlayingDef,
     "CenterBack": CenterBack,
@@ -327,7 +449,13 @@ POSITION_CLASSES = {
     "BallWinningMidfielder": BallWinningMid,
     "BoxToBox": BoxToBox,
     "AdvancedPlaymaker": AdvancedPlaymaker,
-    "ShadowStriker": ShadowStriker
+    "ShadowStriker": ShadowStriker,
+    "Winger": Winger,
+    "InvertedWinger": InvertedWinger,
+    "InsideForward": InsideForward,
+    "AdvancedForward": AdvancedForward,
+    "DeepLyingForward": DeepLyingForward,
+    "TargetForward": TargetForward
 }
 
 def get_position_class(role_name: str):

@@ -79,7 +79,7 @@ role_model=players_ns.model(
     {
         'role': fields.String(
         required=True,
-        enum=['Goalkeeper','SweeperKeeper','BallPlayingDef','CenterBack',
+        enum=['GoalKeeper','SweeperKeeper','BallPlayingDef','CenterBack',
               'WingBack','DeepLyingPlaymaker', 'BallWinningMid','BoxToBox',
               'AdvancedPlaymaker','ShadowStriker'],
         description='Player Roles'
@@ -100,15 +100,15 @@ class ImportPlayers(Resource):
         parser = FM24Parser(path, os.path.basename(path), delimiter="|")
         df = parser.parse()
 
-        # Convert DataFrame columns to lowercase for consistency
-        df.columns = df.columns.str.lower()
+        # Normalize DataFrame columns and remove any leftover whitespace
+        df.columns = df.columns.str.strip().str.lower()
 
-        # Convert numeric columns to int
+        # Convert numeric columns to numbers and preserve non-numeric values
         numeric_cols = df.select_dtypes(include=['object']).columns
         for col in numeric_cols:
             try:
                 df[col] = pd.to_numeric(df[col], errors='coerce').fillna(df[col])
-            except:
+            except Exception:
                 pass
 
         players_added = []
@@ -151,7 +151,7 @@ class PlayerAnalysis(Resource):
         return {
             "player":player_doc['name'],
             "role":role,
-            "rating": rating
+            "rating": round(rating, 2)
         }
         
 @players_ns.route("/analyse/role")
@@ -164,10 +164,36 @@ class RoleAnalysis(Resource):
         for player_doc in player._get_player_collection().find({}):
             position = positions.create_position(role)
             rating = position.rating(player_doc)
-            ratings[player_doc['name']] = rating
+            ratings[player_doc['name']] = round(rating, 2)
 
-        sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True))
+        sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True)[:10])
         return sorted_ratings
+
+@players_ns.route("/analyse/<string:name>/best")
+class PlayerBestRoles(Resource):
+    def get(self, name):
+        player_doc = player.get_player(name)
+        if not player_doc:
+            return {'error': 'Player not found'}, HTTPStatus.NOT_FOUND
+
+        roles = ['GoalKeeper', 'SweeperKeeper', 'BallPlayingDef', 'CenterBack',
+                 'WingBack', 'DeepLyingPlaymaker', 'BallWinningMidfielder', 'BoxToBox',
+                 'AdvancedPlaymaker', 'ShadowStriker','InsideForward','Winger',
+                 'AdvancedForward','DeepLyingForward','TargetForward']
+
+        ratings = []
+        for role in roles:
+            position = positions.create_position(role)
+            rating = position.rating(player_doc)
+            ratings.append({'role': role, 'rating': round(rating, 2)})
+
+        # Sort by rating descending and take top 5
+        best_roles = sorted(ratings, key=lambda x: x['rating'], reverse=True)[:5]
+
+        return {
+            'player': player_doc['name'],
+            'best_roles': best_roles
+        }, HTTPStatus.OK
 
 
 

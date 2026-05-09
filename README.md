@@ -159,6 +159,7 @@ Once the application is running, visit:
 - `GET /players/<name>` - Get a specific player by name
 - `POST /players/import` - Import players from an RTF/delimited file
 - `POST /players/analyse/<name>` - Analyze a player's suitability for a specific position/role
+- `GET /players/analyse/<name>/best` - Get a player's top 5 best positions/roles
 
 **Available Player Roles for Analysis:**
 - Goalkeeper
@@ -202,6 +203,13 @@ curl -X POST http://localhost:8000/players/analyse/John%20Doe \
 ```
 
 Response returns a rating score (0-20) indicating the player's suitability for that position.
+
+#### Get Player's Best 5 Roles
+```bash
+curl http://localhost:8000/players/analyse/John%20Doe/best
+```
+
+Response returns the player's top 5 positions/roles with their ratings.
 
 ## Project Structure
 
