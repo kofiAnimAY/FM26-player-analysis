@@ -81,7 +81,7 @@ role_model=players_ns.model(
         required=True,
         enum=['GoalKeeper','SweeperKeeper','BallPlayingDef','CenterBack',
               'WingBack','DeepLyingPlaymaker', 'BallWinningMid','BoxToBox',
-              'AdvancedPlaymaker','ShadowStriker'],
+              'AdvancedPlaymaker','ShadowStriker','InsideForward','Winger','AdvancedForward','DeepLyingForward','TargetForward'],
         description='Player Roles'
     )
 }) 
