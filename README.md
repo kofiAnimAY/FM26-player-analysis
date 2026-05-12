@@ -25,6 +25,7 @@ A comprehensive REST API for analyzing and tracking Football Manager 2026 (FM26)
 - **Position Management**: 10 distinct player positions with customized attribute weights
 - **Database Support**: MongoDB integration with mock database option for testing
 - **CORS Enabled**: Full cross-origin resource sharing support for frontend integration
+- **Frontend UI**: Static `frontend/index.html` with dropdowns for players, roles, and position categories
 - **API Documentation**: Interactive Swagger UI documentation via flask-restx
 - **Testing**: Comprehensive test suite with pytest and coverage reporting
 - **Type Safety**: MyPy static type checking
@@ -143,6 +144,29 @@ export MONGO_URI=mongodb://localhost:27017
 flask run --debug --host=0.0.0.0 --port=8000
 ```
 
+### Option 5: Open the Frontend UI
+
+If the API is running at `http://localhost:8000`, the application also serves the static frontend automatically on `http://localhost:8080`.
+
+Just start the backend with:
+
+```bash
+python app.py
+```
+
+Then open:
+
+```bash
+http://localhost:8080
+```
+
+The page includes dropdown menus for:
+- Player selection
+- Role selection
+- Position category filtering
+
+The frontend uses the backend API on `http://localhost:8000`, while the static UI is served from `http://localhost:8080`.
+
 ## API Documentation
 
 ### Interactive API Docs
@@ -162,7 +186,7 @@ Once the application is running, visit:
 - `GET /players/analyse/<name>/best` - Get a player's top 5 best positions/roles
 
 **Available Player Roles for Analysis:**
-- Goalkeeper
+- GoalKeeper
 - SweeperKeeper
 - BallPlayingDef
 - CenterBack
@@ -172,6 +196,11 @@ Once the application is running, visit:
 - BoxToBox
 - AdvancedPlaymaker
 - ShadowStriker
+- InsideForward
+- Winger
+- AdvancedForward
+- DeepLyingForward
+- TargetForward
 
 **Player Attributes** (40+ tracked attributes):
 acceleration, adaptability, aerial_reach, agility, aggression, ambition, anticipation, balance, bravery, command_of_area, communication, composure, concentration, corners, crossing, decisions, determination, dribbling, eccentricity, flair, finishing, first_touch, free_kick_taking, handling, heading, jumping_reach, kicking, leadership, long_shots, long_throws, marking, natural_fitness, off_the_ball, one_on_ones, pace, passing, penalty_taking, positioning, punching_tendency, reflexes, rushing_out_tendency, stamina, strength, tackling, teamwork, technique, throwing, vision, work_rate
@@ -206,7 +235,9 @@ Response returns a rating score (0-20) indicating the player's suitability for t
 
 #### Get Player's Best 5 Roles
 ```bash
-curl http://localhost:8000/players/analyse/John%20Doe/best
+curl -X POST http://localhost:8000/players/analyse/John%20Doe/best \
+  -H "Content-Type: application/json" \
+  -d '{"category": "MID"}'
 ```
 
 Response returns the player's top 5 positions/roles with their ratings.

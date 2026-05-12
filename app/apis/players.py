@@ -85,6 +85,15 @@ role_model=players_ns.model(
         description='Player Roles'
     )
 }) 
+position_model=players_ns.model(
+    "Position",
+    {
+        'category': fields.String(
+        required=False,
+        enum=['GK', 'DEF', 'MID', 'ATT'],
+        description='Position Category (GK, DEF, MID, ATT)'
+    )}
+)
     
 
 
@@ -171,10 +180,17 @@ class RoleAnalysis(Resource):
 
 @players_ns.route("/analyse/<string:name>/best")
 class PlayerBestRoles(Resource):
-    def get(self, name):
+    @players_ns.expect(position_model)
+    def post(self, name):
         player_doc = player.get_player(name)
+        data = request.json
+        category = data.get('category') if data else None
         if not player_doc:
             return {'error': 'Player not found'}, HTTPStatus.NOT_FOUND
+        if category:
+            if category not in ['GK', 'DEF', 'MID', 'ATT']:
+                return {'error': 'Invalid category'}, HTTPStatus.BAD_REQUEST
+        
 
         roles = ['GoalKeeper', 'SweeperKeeper', 'BallPlayingDef', 'CenterBack',
                  'WingBack', 'DeepLyingPlaymaker', 'BallWinningMidfielder', 'BoxToBox',
@@ -184,8 +200,9 @@ class PlayerBestRoles(Resource):
         ratings = []
         for role in roles:
             position = positions.create_position(role)
-            rating = position.rating(player_doc)
-            ratings.append({'role': role, 'rating': round(rating, 2)})
+            if position.category == category or not category:
+                rating = position.rating(player_doc)
+                ratings.append({'role': role, 'rating': round(rating, 2)})
 
         # Sort by rating descending and take top 5
         best_roles = sorted(ratings, key=lambda x: x['rating'], reverse=True)[:5]
@@ -194,7 +211,6 @@ class PlayerBestRoles(Resource):
             'player': player_doc['name'],
             'best_roles': best_roles
         }, HTTPStatus.OK
-
 
 
             

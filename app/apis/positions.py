@@ -304,7 +304,7 @@ class ShadowStriker(BasePosition):
 
 class Winger(BasePosition):
     def __init__(self):
-        super().__init__("Winger","MID",{
+        super().__init__("Winger","ATT",{
             "crossing": 0.7,
             "dribbling": 0.55,
             "first_touch": 0.2,         
@@ -324,7 +324,7 @@ class Winger(BasePosition):
 
 class InvertedWinger(BasePosition):
     def __init__(self):
-        super().__init__("Inverted Winger","MID",{
+        super().__init__("Inverted Winger","ATT",{
             "crossing": 0.35,
             "dribbling": 0.6,
             "first_touch": 0.2,  
@@ -348,7 +348,7 @@ class InvertedWinger(BasePosition):
 
 class InsideForward(BasePosition):
     def __init__(self):
-        super().__init__("Inside Forward","MID",{
+        super().__init__("Inside Forward","ATT",{
             
             "dribbling": 0.4,
             "finishing": 0.55,
@@ -373,7 +373,7 @@ class InsideForward(BasePosition):
 
 class AdvancedForward(BasePosition):
     def __init__(self):
-        super().__init__("Advanced Forward","FWD",{
+        super().__init__("Advanced Forward","ATT",{
             "dribbling": 0.3,
             "finishing": 0.7,
             "first_touch": 0.3, 
@@ -398,7 +398,7 @@ class AdvancedForward(BasePosition):
 
 class DeepLyingForward(BasePosition):
     def __init__(self):
-        super().__init__("Deep Lying Forward","FWD",{
+        super().__init__("Deep Lying Forward","ATT",{
             "finishing": 0.55,
             "first_touch": 0.3, 
             "passing": 0.4,
@@ -419,7 +419,7 @@ class DeepLyingForward(BasePosition):
 
 class TargetForward(BasePosition):
     def __init__(self):
-        super().__init__("Target Forward","FWD",{
+        super().__init__("Target Forward","ATT",{
             "finishing": 0.5,
             "first_touch": 0.2, 
             "heading": 0.55,
