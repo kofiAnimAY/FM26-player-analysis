@@ -22,7 +22,7 @@ A comprehensive REST API for analyzing and tracking Football Manager 2026 (FM26)
 - **Player Attributes**: Track 40+ player statistics including technical, physical, and mental attributes
 - **Position-Based Rating**: Analyze players for specific positions (Goalkeeper, Defenders, Midfielders, Forwards) with weighted attribute scoring
 - **Data Import**: Import player data from RTF/delimited text files
-- **Position Management**: 10 distinct player positions with customized attribute weights
+- **Position Management**: 10+ distinct player positions with customized attribute weights
 - **Database Support**: MongoDB integration with mock database option for testing
 - **CORS Enabled**: Full cross-origin resource sharing support for frontend integration
 - **Frontend UI**: Static `frontend/index.html` with dropdowns for players, roles, and position categories
@@ -45,6 +45,7 @@ A comprehensive REST API for analyzing and tracking Football Manager 2026 (FM26)
 - Python 3.8 or higher
 - MongoDB (local or remote instance) - or use mock DB for development
 - pip package manager
+- Docker (optional, for frontend container)
 
 ## Installation
 
@@ -167,6 +168,26 @@ The page includes dropdown menus for:
 
 The frontend uses the backend API on `http://localhost:8000`, while the static UI is served from `http://localhost:8080`.
 
+### Option 6: Build the Frontend Docker Image
+
+From the repository root, build the frontend container with:
+
+```bash
+docker build -f frontend/Dockerfile -t fm26-frontend .
+```
+
+Then run it locally:
+
+```bash
+docker run --rm -p 80:80 fm26-frontend
+```
+
+Open the static UI at:
+
+```bash
+http://localhost
+```
+
 ## API Documentation
 
 ### Interactive API Docs
@@ -221,7 +242,7 @@ curl http://localhost:8000/players/John%20Doe
 ```bash
 curl -X POST http://localhost:8000/players/import \
   -H "Content-Type: application/json" \
-  -d '{"players.rtf": "/path/to/players_data.rtf"}'
+  -d '{"path": "/path/to/players_data.rtf"}'
 ```
 
 #### Analyze Player Suitability for a Position

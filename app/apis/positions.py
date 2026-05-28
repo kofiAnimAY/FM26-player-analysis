@@ -384,7 +384,6 @@ class AdvancedForward(BasePosition):
             "work_rate": 0.2,
             "long_shots": 0.2,
             "composure": 0.25,
-            "decisions": 0.25,
             "off_the_ball": 0.5,
             "acceleration": 0.6,
             "agility": 0.15,

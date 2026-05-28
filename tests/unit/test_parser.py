@@ -1,4 +1,8 @@
 import tempfile
+import pytest
+import os
+import pandas as pd
+from http import HTTPStatus
 from app.apis.parser import FM24Parser
 
 
