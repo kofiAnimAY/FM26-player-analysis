@@ -57,6 +57,7 @@
     }
 
     select,
+    input,
     button {
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 12px;
@@ -122,6 +123,85 @@
       color: #9da6d7;
     }
 
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin: 18px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #dce4ff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(90deg,#3a4ad6,#6c7bff);
+      border-color: rgba(108,123,255,0.6);
+      color: white;
+    }
+
+    .manual-groups {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 16px;
+      grid-column: 1 / -1;
+    }
+
+    .field.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .attribute-group {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .attribute-group h3 {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #eef2ff;
+    }
+
+    .attribute-subgroup {
+      margin-top: 18px;
+    }
+
+    .attribute-subgroup h4 {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      color: #b8c0db;
+    }
+
+    .attribute-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .manual-groups {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .manual-groups {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 620px) {
       .button-row {
         flex-direction: column;
@@ -133,6 +213,14 @@
   <main class="container">
     <h1>FM26 Player Analysis</h1>
     <p class="lead">Choose a player, a role and a position category from the dropdown menus. Then run analysis against the backend API without typing raw strings.</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="analyze">Analyze Role</button>
+      <button class="tab-btn" data-tab="best">Player Best Roles</button>
+      <button class="tab-btn" data-tab="top">Top Players by Role</button>
+      <button class="tab-btn" data-tab="import">Import Players</button>
+      <button class="tab-btn" data-tab="manual">Add Player (Manual)</button>
+    </div>
 
     <div class="form-grid">
       <div class="field">
@@ -159,12 +247,100 @@
           <option value="ATT">ATT</option>
         </select>
       </div>
+      <div class="field">
+        <label for="importPath">Import file path</label>
+        <input id="importPath" type="text" placeholder="e.g. data/players.rtf" />
+      </div>
+      <div class="field full-width">
+        <label for="manualName">Player Name</label>
+        <input id="manualName" type="text" placeholder="e.g. John Smith" />
+      </div>
+
+      <div class="manual-groups" id="manualSection">
+        <div class="attribute-group">
+          <h3>Technical</h3>
+          <div class="attribute-fields">
+            <div class="field"><label for="attr_crossing">Crossing</label><input id="attr_crossing" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_dribbling">Dribbling</label><input id="attr_dribbling" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_finishing">Finishing</label><input id="attr_finishing" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_first_touch">First touch</label><input id="attr_first_touch" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_heading">Heading</label><input id="attr_heading" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_long_shots">Long shots</label><input id="attr_long_shots" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_marking">Marking</label><input id="attr_marking" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_passing">Passing</label><input id="attr_passing" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_tackling">Tackling</label><input id="attr_tackling" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_technique">Technique</label><input id="attr_technique" type="number" min="0" max="20" /></div>
+          </div>
+        </div>
+        
+        
+        <div class="attribute-group">
+          <h3>Mental</h3>
+          <div class="attribute-fields">
+            <div class="field"><label for="attr_aggression">Aggression</label><input id="attr_aggression" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_anticipation">Anticipation</label><input id="attr_anticipation" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_bravery">Bravery</label><input id="attr_bravery" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_composure">Composure</label><input id="attr_composure" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_concentration">Concentration</label><input id="attr_concentration" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_decisions">Decisions</label><input id="attr_decisions" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_determination">Determination</label><input id="attr_determination" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_flair">Flair</label><input id="attr_flair" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_leadership">Leadership</label><input id="attr_leadership" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_off_the_ball">Off the Ball</label><input id="attr_off_the_ball" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_positioning">Positioning</label><input id="attr_positioning" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_teamwork">Teamwork</label><input id="attr_teamwork" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_vision">Vision</label><input id="attr_vision" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_work_rate">Work Rate</label><input id="attr_work_rate" type="number" min="0" max="20" /></div>
+          </div>
+        </div>
+        <div class="attribute-group">
+          <h3>Physical</h3>
+          <div class="attribute-fields">
+            <div class="field"><label for="attr_acceleration">Acceleration</label><input id="attr_acceleration" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_agility">Agility</label><input id="attr_agility" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_balance">Balance</label><input id="attr_balance" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_jumping_reach">Jumping Reach</label><input id="attr_jumping_reach" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_natural_fitness">Natural Fitness</label><input id="attr_natural_fitness" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_pace">Pace</label><input id="attr_pace" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_stamina">Stamina</label><input id="attr_stamina" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_strength">Strength</label><input id="attr_strength" type="number" min="0" max="20" /></div>
+          </div>
+          
+        </div>
+        <div class="attribute-group">
+          <h3>Set Pieces</h3>
+          <div class="attribute-fields">
+            <div class="field"><label for="attr_corners">Corners</label><input id="attr_corners" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_free_kick_taking">Free Kick Taking</label><input id="attr_free_kick_taking" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_long_throws">Long throws</label><input id="attr_long_throws" type="number" min="0" max="20" /></div>
+            <div class="field"><label for="attr_penalty_taking">Penalty taking</label><input id="attr_penalty_taking" type="number" min="0" max="20" /></div>
+          </div>
+        </div>
+        <div class="attribute-group">
+            <h3>Goalkeeping</h3>
+            <div class="attribute-fields">
+              <div class="field"><label for="attr_aerial_reach">Aerial Reach</label><input id="attr_aerial_reach" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_command_of_area">Command of Area</label><input id="attr_command_of_area" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_communication">Communication</label><input id="attr_communication" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_eccentricity">Eccentricity</label><input id="attr_eccentricity" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_handling">Handling</label><input id="attr_handling" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_kicking">Kicking</label><input id="attr_kicking" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_one_on_ones">One on Ones</label><input id="attr_one_on_ones" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_punching_tendency">Punching Tendency</label><input id="attr_punching_tendency" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_reflexes">Reflexes</label><input id="attr_reflexes" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_rushing_out_tendency">Rushing Out Tendency</label><input id="attr_rushing_out_tendency" type="number" min="0" max="20" /></div>
+              <div class="field"><label for="attr_throwing">Throwing</label><input id="attr_throwing" type="number" min="0" max="20" /></div>
+            </div>
+          </div>
+      </div>
     </div>
 
     <div class="button-row">
       <button id="analyzeRoleBtn" type="button">Analyze Selected Role</button>
       <button id="bestRolesBtn" type="button">View Best Roles</button>
       <button id="allForRoleBtn" type="button">Top Players for Role</button>
+      <button id="importBtn" type="button">Import Players</button>
+      <button id="addPlayerBtn" type="button">Add Player</button>
     </div>
 
     <div class="status" id="statusMessage">Ready.</div>
@@ -181,6 +357,63 @@
     const resultOutput = document.getElementById('resultOutput');
     const statusMessage = document.getElementById('statusMessage');
     const API_BASE = 'http://localhost:8000';
+
+    const importPathInput = document.getElementById('importPath');
+    const importBtn = document.getElementById('importBtn');
+    const manualName = document.getElementById('manualName');
+    const addPlayerBtn = document.getElementById('addPlayerBtn');
+    const manualSection = document.getElementById('manualSection');
+
+    // Tab logic: map tabs to visible field IDs and buttons
+    const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+    const manualAttributes = [
+      'crossing','dribbling','finishing','first_touch','free_kick_taking','heading','long_shots','long_throws','marking','passing','penalty_taking','tackling','technique','corners','aggression','anticipation','bravery','composure','concentration','decisions','determination','flair','leadership','off_the_ball','positioning','teamwork','vision','work_rate','adaptability','ambition','acceleration','agility','balance','jumping_reach','natural_fitness','pace','stamina','strength','aerial_reach','command_of_area','communication','eccentricity','handling','kicking','one_on_ones','punching_tendency','reflexes','rushing_out_tendency','throwing'
+    ];
+
+    const basicFields = ['playerSelect','roleSelect','positionSelect','importPath','manualName'];
+    const fieldIds = basicFields.concat(manualAttributes.map(a => 'attr_' + a));
+    const buttonIds = ['analyzeRoleBtn','bestRolesBtn','allForRoleBtn','importBtn','addPlayerBtn'];
+
+    const tabMap = {
+      analyze: { fields: ['playerSelect','roleSelect'], buttons: ['analyzeRoleBtn'] },
+      best: { fields: ['playerSelect','positionSelect'], buttons: ['bestRolesBtn'] },
+      top: { fields: ['roleSelect'], buttons: ['allForRoleBtn'] },
+      import: { fields: ['importPath'], buttons: ['importBtn'] },
+      manual: { fields: ['manualName'].concat(manualAttributes.map(a => 'attr_' + a)), buttons: ['addPlayerBtn'] }
+    };
+
+    function hideAll() {
+      // hide field containers
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement) el.parentElement.style.display = 'none';
+      });
+      // hide buttons
+      buttonIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    function showTab(name) {
+      hideAll();
+      if (manualSection) {
+        manualSection.style.display = name === 'manual' ? '' : 'none';
+      }
+      const map = tabMap[name];
+      if (!map) return;
+      map.fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement) el.parentElement.style.display = '';
+      });
+      map.buttons.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = '';
+      });
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    }
+
+    tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
 
     const roles = [
       'GoalKeeper',
@@ -255,6 +488,61 @@
       return response.json();
     }
 
+    async function importPlayers() {
+      const path = importPathInput.value && importPathInput.value.trim();
+      if (!path) {
+        setStatus('Enter a file path to import.', true);
+        return;
+      }
+      try {
+        setStatus('Importing players...');
+        setResult('Working…');
+        const result = await postJson(`${API_BASE}/players/import`, { path });
+        setStatus('Import complete. Refreshing players.');
+        setResult(result);
+        await fetchPlayers();
+      } catch (error) {
+        setStatus('Error importing players. See output.', true);
+        setResult(error.message);
+      }
+    }
+
+    async function addPlayer() {
+      const name = manualName.value && manualName.value.trim();
+      if (!name) {
+        setStatus('Enter a player name.', true);
+        return;
+      }
+
+      const payload = { name };
+      // collect numeric attributes limited to 0-20
+      manualAttributes.forEach(attr => {
+        const el = document.getElementById('attr_' + attr);
+        if (el && el.value !== '') {
+          const val = Number(el.value);
+          payload[attr] = val;
+        }
+      });
+
+      try {
+        setStatus('Adding player...');
+        setResult('Working…');
+        const result = await postJson(`${API_BASE}/players/create`, payload);
+        setStatus('Player added. Refreshing players.');
+        setResult(result);
+        // Clear form
+        manualName.value = '';
+        manualAttributes.forEach(attr => {
+          const el = document.getElementById('attr_' + attr);
+          if (el) el.value = '';
+        });
+        await fetchPlayers();
+      } catch (error) {
+        setStatus('Error adding player. See output.', true);
+        setResult(error.message);
+      }
+    }
+
     analyzeRoleBtn.addEventListener('click', async () => {
       const playerName = playerSelect.value;
       const role = roleSelect.value;
@@ -294,6 +582,9 @@
       }
     });
 
+    importBtn.addEventListener('click', importPlayers);
+    addPlayerBtn.addEventListener('click', addPlayer);
+
     allForRoleBtn.addEventListener('click', async () => {
       const role = roleSelect.value;
       if (!role) {
@@ -315,6 +606,7 @@
     window.addEventListener('load', async () => {
       populateRoleOptions();
       await fetchPlayers();
+      showTab('analyze');
     });
   </script>
 </body>

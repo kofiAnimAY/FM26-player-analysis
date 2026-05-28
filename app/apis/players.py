@@ -148,6 +148,23 @@ class FindPlayers(Resource):
         
         return player_doc, HTTPStatus.OK
 
+
+@players_ns.route("/create")
+class CreatePlayer(Resource):
+    @players_ns.expect(player_model)
+    def post(self):
+        data = request.json or {}
+        name = data.get('name') or data.get('NAME')
+        if not name:
+            return {'error': 'Player `name` is required'}, HTTPStatus.BAD_REQUEST
+
+        # Normalize key for storage: prefer 'name'
+        if 'NAME' in data and 'name' not in data:
+            data['name'] = data.pop('NAME')
+
+        player_id = player.add_player(**data)
+        return {MSG: 'Player created', 'id': player_id}, HTTPStatus.CREATED
+
 @players_ns.route("/analyse/<string:name>")
 class PlayerAnalysis(Resource):
     @players_ns.expect(role_model)
