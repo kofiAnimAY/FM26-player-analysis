@@ -128,14 +128,14 @@ This command:
 3. Runs tests
 4. Starts the Flask development server with MongoDB
 
-### Option 3: Using Gunicorn (Production)
+<!-- ### Option 3: Using Gunicorn (Production)
 
 ```bash
 gunicorn -w 4 -b 0.0.0.0:8000 "app:create_app()"
 ```
 
 - `-w 4`: Run with 4 worker processes
-- `-b 0.0.0.0:8000`: Bind to all interfaces on port 8000
+- `-b 0.0.0.0:8000`: Bind to all interfaces on port 8000 -->
 
 ### Option 4: With Flask CLI
 
