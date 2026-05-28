@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FM26 Player Analysis</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1120;
+      color: #f4f7ff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: min(100%, 980px);
+      background: linear-gradient(180deg, rgba(14, 23, 48, 0.98), rgba(10, 16, 35, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+      padding: 32px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 2.6vw, 3rem);
+      letter-spacing: -0.04em;
+    }
+
+    p.lead {
+      margin: 0 0 28px;
+      color: #b8c0db;
+      line-height: 1.75;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-bottom: 24px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.95rem;
+      color: #d3d7ef;
+    }
+
+    select,
+    button {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      background: rgba(18, 30, 64, 0.9);
+      color: #f8fbff;
+      padding: 14px 16px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    select:focus,
+    button:focus {
+      border-color: #6c7bff;
+      box-shadow: 0 0 0 4px rgba(108, 123, 255, 0.16);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .button-row button {
+      flex: 1;
+      min-width: 160px;
+      background: #2d3b78;
+    }
+
+    .button-row button:hover {
+      background: #4351bc;
+    }
+
+    .output {
+      margin-top: 28px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      min-height: 160px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      line-height: 1.6;
+      color: #e9efff;
+    }
+
+    .status {
+      margin-top: 14px;
+      color: #9fb2ff;
+      font-size: 0.95rem;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: #9da6d7;
+    }
+
+    @media (max-width: 620px) {
+      .button-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>FM26 Player Analysis</h1>
+    <p class="lead">Choose a player, a role and a position category from the dropdown menus. Then run analysis against the backend API without typing raw strings.</p>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="playerSelect">Player</label>
+        <select id="playerSelect">
+          <option value="">Loading players…</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="roleSelect">Role</label>
+        <select id="roleSelect">
+          <option value="">Select a role</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="positionSelect">Position Category</label>
+        <select id="positionSelect">
+          <option value="">Select a position category</option>
+          <option value="GK">GK</option>
+          <option value="DEF">DEF</option>
+          <option value="MID">MID</option>
+          <option value="ATT">ATT</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="analyzeRoleBtn" type="button">Analyze Selected Role</button>
+      <button id="bestRolesBtn" type="button">View Best Roles</button>
+      <button id="allForRoleBtn" type="button">Top Players for Role</button>
+    </div>
+
+    <div class="status" id="statusMessage">Ready.</div>
+    <div class="output" id="resultOutput">Select a player and role to begin.</div>
+  </main>
+
+  <script>
+    const playerSelect = document.getElementById('playerSelect');
+    const roleSelect = document.getElementById('roleSelect');
+    const positionSelect = document.getElementById('positionSelect');
+    const analyzeRoleBtn = document.getElementById('analyzeRoleBtn');
+    const bestRolesBtn = document.getElementById('bestRolesBtn');
+    const allForRoleBtn = document.getElementById('allForRoleBtn');
+    const resultOutput = document.getElementById('resultOutput');
+    const statusMessage = document.getElementById('statusMessage');
+    const API_BASE = 'http://localhost:8000';
+
+    const roles = [
+      'GoalKeeper',
+      'SweeperKeeper',
+      'BallPlayingDef',
+      'CenterBack',
+      'WingBack',
+      'DeepLyingPlaymaker',
+      'BallWinningMid',
+      'BoxToBox',
+      'AdvancedPlaymaker',
+      'ShadowStriker',
+      'InsideForward',
+      'Winger',
+      'AdvancedForward',
+      'DeepLyingForward',
+      'TargetForward'
+    ];
+
+    function setStatus(message, isError = false) {
+      statusMessage.textContent = message;
+      statusMessage.style.color = isError ? '#ff8a8a' : '#9fb2ff';
+    }
+
+    function setResult(content) {
+      resultOutput.textContent = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+    }
+
+    async function fetchPlayers() {
+      try {
+        setStatus('Loading players...');
+        const response = await fetch(`${API_BASE}/players/list`);
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}`);
+        }
+        const players = await response.json();
+        playerSelect.innerHTML = '<option value="">Choose a player</option>';
+        players.sort((a, b) => a.name.localeCompare(b.name)).forEach(player => {
+          const option = document.createElement('option');
+          option.value = player.name;
+          option.textContent = player.name;
+          playerSelect.appendChild(option);
+        });
+        setStatus('Players loaded. Choose a player and role.');
+      } catch (error) {
+        playerSelect.innerHTML = '<option value="">Failed to load players</option>';
+        setStatus('Unable to load players. Check backend availability.', true);
+        setResult(error.message);
+      }
+    }
+
+    function populateRoleOptions() {
+      roleSelect.innerHTML = '<option value="">Choose a role</option>';
+      roles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role;
+        option.textContent = role;
+        roleSelect.appendChild(option);
+      });
+    }
+
+    async function postJson(url, body) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Request failed: ${response.status} ${errorText}`);
+      }
+      return response.json();
+    }
+
+    analyzeRoleBtn.addEventListener('click', async () => {
+      const playerName = playerSelect.value;
+      const role = roleSelect.value;
+      if (!playerName || !role) {
+        setStatus('Pick both a player and a role before analyzing.', true);
+        return;
+      }
+      try {
+        setStatus('Analyzing player role...');
+        setResult('Loading…');
+        const result = await postJson(`${API_BASE}/players/analyse/${encodeURIComponent(playerName)}`, { role });
+        setStatus('Analysis complete.');
+        setResult(result);
+      } catch (error) {
+        setStatus('Error analyzing role. See output for details.', true);
+        setResult(error.message);
+      }
+    });
+
+    bestRolesBtn.addEventListener('click', async () => {
+      const playerName = playerSelect.value;
+      const category = positionSelect.value;
+      if (!playerName) {
+        setStatus('Select a player first.', true);
+        return;
+      }
+      try {
+        setStatus('Fetching best roles...');
+        setResult('Loading…');
+        const payload = category ? { category } : {};
+        const result = await postJson(`${API_BASE}/players/analyse/${encodeURIComponent(playerName)}/best`, payload);
+        setStatus('Best roles loaded.');
+        setResult(result);
+      } catch (error) {
+        setStatus('Error loading best roles.', true);
+        setResult(error.message);
+      }
+    });
+
+    allForRoleBtn.addEventListener('click', async () => {
+      const role = roleSelect.value;
+      if (!role) {
+        setStatus('Select a role first.', true);
+        return;
+      }
+      try {
+        setStatus('Fetching top players for role...');
+        setResult('Loading…');
+        const result = await postJson(`${API_BASE}/players/analyse/role`, { role });
+        setStatus('Top players for selected role loaded.');
+        setResult(result);
+      } catch (error) {
+        setStatus('Error fetching role leaderboard.', true);
+        setResult(error.message);
+      }
+    });
+
+    window.addEventListener('load', async () => {
+      populateRoleOptions();
+      await fetchPlayers();
+    });
+  </script>
+</body>
+</html>
